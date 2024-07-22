@@ -1,0 +1,70 @@
+/*TASK2*/
+
+/*FSM*/
+
+module fsm(clk,rst,x,y,z);
+input clk,rst,x,y;
+output z;
+reg [1:0]NS,PS;
+parameter s0=0,s1=1,s2=2,s3=3;
+always@(posedge clk or posedge rst)begin
+if(rst)
+PS<=s0;
+else
+PS<=NS;
+end
+always@(PS,x,y)
+case(PS)
+s0:begin
+if(rst)
+NS=s0;
+else if(x)
+NS=s1;
+else if(y)
+NS=s2;
+end
+s1:begin
+if(x)
+NS=s2;
+else if(y)
+NS=s3;
+end
+s2:begin
+if(x)
+NS=s3;
+end
+s3:begin
+if(x)
+NS=s0;
+else if(y)
+NS=s0;
+end
+endcase
+assign z=(PS==s3);
+endmodule
+
+/*FSM TESTBENCH*/
+
+module fsm_tb();
+reg clk,rst,x,y;
+wire z;
+parameter s0=0,s1=1,s2=2,s3=3;
+initial
+begin
+clk=1'b0;
+rst=1'b1;
+#20 rst=1'b0;
+end
+always#10 clk=~clk;
+initial  
+begin
+#30 x=1;y=0;
+#20 x=1;y=0;
+#20 x=1;y=0;
+#20 x=0;y=0;
+#20 x=0;y=1;
+#20 x=1;y=0;
+#20;
+end
+fsm f1(clk,rst,x,y,z);
+endmodule
